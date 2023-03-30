@@ -1,0 +1,57 @@
+﻿<!DOCTYPE html>
+<html xml:lang="zh-Hans" lang="zh-Hans">
+<head>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport"
+    content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+  <title>DQM配合查询</title>
+  <meta name="keywords"
+    content="勇者斗恶龙怪兽篇1+2合成表,勇者斗恶龙怪兽篇:特瑞的神奇王国合成表,勇者斗恶龙怪兽篇:伊尔和鲁卡之不可思议游戏的钥匙合成表,勇者斗恶龙怪兽篇配合查询合成表,DQM1配合在线查询" />
+</head>
+
+<body>
+  <div id="status"></div>
+  <div id="content" style="width:330px; margin:0 auto;" hidden>
+    <div id="s_list"></div>
+    <div id="sm_list" style="display:none;">
+      <div id="sm_head"><span onclick="closeMl();">X</span>选择怪兽</div>
+      <div id="sm_slist"></div>
+      <div id="sm_mlist"></div>
+    </div>
+    <div id="km_list" style="display:none;">
+      <div id="km_head"><span onclick="closeKl();">X</span>查看特技</div>
+      <div id="km_klist"></div>
+      <div id="km_mlist"></div>
+    </div>
+    <div class="clear"></div>
+    <div id="s_lang" class="selop"><span class="sel" onclick="chgLn(0)">中</span><span onclick="chgLn(1)">日</span><span
+        onclick="chgLn(2)">英</span></div>
+    <div>
+      <div class="mi_left">
+        <div id="m_logo"></div>
+        <div id="m_rels"></div>
+      </div>
+      <div class="mi_right">
+        <div id="m_info"></div>
+        <div id="m_skil"></div>
+      </div>
+    </div>
+    <div class="clear"></div>
+    <div id="m_data"></div>
+    <div id="m_resist"></div>
+    <div id="m_xlchg">
+      <span id="m_xlsp_1" class="selected" onclick="chgXX(1);">配合</span>
+      <span id="m_xlsp_2" onclick="chgXX(2)">血统</span>
+      <span id="m_xlsp_3" onclick="chgXX(3)">对象</span>
+    </div>
+    <div id="s_xlop" class="selop"><span class="sel" onclick="chgSxs()">系</span><span class="sel" onclick="chgVn(1)"
+        style="width:22px;">GB1</span><span class="sel" onclick="chgVn(2)" style="width:22px;">GB2</span><span
+        class="sel" onclick="chgVn(3)">PS</span></div>
+    <div id="m_xlist"></div>
+  </div>
+  <script type="text/javascript" src="assets/js/common.min.js?js=PH.min"></script>
+</body>
+
+</html>
