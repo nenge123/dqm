@@ -17,7 +17,7 @@ var  Module = new class{
         console.log('ok',e);
         delete this.wasmBinary;
         let D = this;
-        T.FetchItem({
+        await T.FetchItem({
             url:D.getdatapath('bios_gba.zip'),
             store:T.LibStore,
             unpack:true,
