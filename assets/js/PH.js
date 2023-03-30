@@ -36,7 +36,7 @@ function getUrl(path){
     T.$('#content').hidden = false;
     initSl();
 }).call(T);
-if('serviceWorker' in navigator){
+if(location.origin == 'https://dqm.nenge.net/' && 'serviceWorker' in navigator){
     navigator.serviceWorker.register('assets/js/PH_sw.js').then(worker=>{
     }).catch(e=>console.log('reg errot',e));
 }

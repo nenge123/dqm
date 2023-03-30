@@ -1,6 +1,7 @@
 var CACHE_NAME = 'v1';
 var urlsToCache = [
     '../../PH.html',
+    '../../favicon.ico',
     'common.min.js',
     'PH.min.js',
 ];
