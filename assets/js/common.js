@@ -28,14 +28,14 @@ const Nenge = new class NengeCores {
         T.triger(document, 'NengeStart', {
             detail: T
         });
-        T.RunJs(src[1]);
+        T.RunJs(src&&I.Attr(document.currentScript,'query'));
     }
     async RunJs(q) {
         let T = this,
             I = T.I;
         if (q) {
             let info = I.FormGet(q);
-            T.SP(info.get('js') || "", v => T.addJS(this.F.getpath(v + '.js?' + (T.isLocal?T.time:''))));
+            T.SP(info.get('js') || "", v => v&&T.addJS(this.F.getpath(v.replace('?rand','?'+T.time))));
             T.version = info.get('version') || T.version
         }
         T.docload(e => T.triger(document, 'NengeReady', {
