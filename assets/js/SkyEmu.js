@@ -19,6 +19,7 @@ var  Module = new class{
         let D = this;
         T.FetchItem({
             url:D.getdatapath('bios_gba.zip'),
+            store:T.LibStore,
             unpack:true,
             success(data){
                 I.toArr(data,entry=>Module.DISK.MKFILE(entry[0],entry[1]))
@@ -140,6 +141,7 @@ var  Module = new class{
     async init(){
         let files = await T.FetchItem({
             url:this.getdatapath('SkyEmu.zip'),
+            store:T.LibStore,
             unpack:true,
             process:e=>T.$('#status').innerHTML = e,
         });
