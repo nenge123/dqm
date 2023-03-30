@@ -165,6 +165,6 @@ var  Module = new class{
         input.click();
     }
     getdatapath(path){
-        return T.isLocal?'assets/data/'+path:'https://cdn.jsdelivr.net/gh/nenge123/dqm@master/assets/data/'+path;
+        return T.isLocal?'assets/data/'+path:'https://raw.githubusercontent.com/nenge123/dqm/master/assets/data/'+path;
     }
 }
