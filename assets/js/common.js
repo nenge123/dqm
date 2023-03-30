@@ -1,10 +1,10 @@
 const Nenge = new class NengeCores {
     version = 1;
-    DB_NAME = 'Nenge';
+    DB_NAME = 'DQM';
     DB_STORE_MAP = {
         libjs: {},
-        myfile: {
-            timestamp: false
+        rom: {
+            system: false
         }
     };
     LibStore = 'libjs';
@@ -1006,8 +1006,9 @@ const Nenge = new class NengeCores {
                         let arr = [];
                         for (let i = 0; i < o.length; i++) {
                             let v = o.item(i);
-                            if (typeof v == 'string') arr.push([v, I.GP(o, v)]);
+                            if (typeof v == 'string'&&o.getPropertyValue) arr.push([v, I.GP(o, v)]);
                             else if (v.value) arr.push([v.name, v.value]);
+                            else arr.push(v);
                         }
                         return arr;
                     }
@@ -1022,6 +1023,7 @@ const Nenge = new class NengeCores {
                 getEntries: {
                     value(o) {
                         if (o.item) return I.ET(o);
+                        if(o.byteLength) return I.ArrFrom(new O[11](o.buffer||o));
                         if (o.entries) return I.EQ(o.entries());
                         if (o.length) return I.ArrFrom(o);
                         if (o.forEach) return I.FE(o);
@@ -1101,7 +1103,7 @@ const Nenge = new class NengeCores {
             let arr = [],
                 I = this,
                 type = I.C(obj);
-            if (obj.byteLength || obj.length) arr = I.ArrFrom(obj);
+            if (type == I.O[0]) arr = obj;
             else if (I.obj(obj)) arr = I.Entries(obj);
             else if (type == I.O[28]) arr = Array.from("".padStart(obj));
             else if (type != I.O[0]) arr = I.getEntries(obj);
@@ -1356,14 +1358,17 @@ const Nenge = new class NengeCores {
                 buf = u8.slice(0, 16),
                 textext = F.BF('textext');
             let text = I.blob(buf) ? buf.arrayBuffer() : I.str(buf) ? I.encode(buf) : buf;
-            return I.await(text) ? I.Async(async e => e(textext(await text))) : textext(text);
+            return I.await(text) ? I.Async(async e => {
+                console.log(text);
+                e(textext(await text))
+            }) : textext(text);
         }
         async unFile(u8, ARG = {}) {
             let F = this,
                 I = F.I;
             if (I.await(u8)) u8 = await u8;
             if (I.array(u8)) u8 = I.U8(u8);
-            let ext = await F.CheckExt(u8);
+            let ext = I.file(u8)&&/(zip|rar|7z)/i.test(F.getExt(u8.name))&&F.getExt(u8.name)||await F.CheckExt(u8);
             if (F.action[ext]) {
                 if (!ARG.PassExt || !ARG.PassExt.includes(zip)) return await F.CF(ext, u8, ARG);
             }
@@ -1814,6 +1819,9 @@ const Nenge = new class NengeCores {
                     },
                     removeTable: {
                         value: (...a) => S.callFunc(T.removeTable, a)
+                    },
+                    transaction:{
+                        value:bool=>T.F.dbSelect(S.setName(),bool)
                     }
                 },!1);
                 S.read = S.get;
@@ -1824,7 +1832,8 @@ const Nenge = new class NengeCores {
             }
             setName(t) {
                 return this.I.assign({
-                    dbName: this.name
+                    dbName: this.name,
+                    store:this.table
                 }, t)
             }
             get(t, e, a) {

@@ -42,7 +42,7 @@ const eventFunc = {
             caches.match(event.request).then(function (response) {
                 console.log(response&&response.url);
                 return response||fetch(event.request).then( async (response)=>{
-                    if(!/(\?|\.zip)/.test(event.request.url)){
+                    if(!/(\?|\.zip|assets\/data\/)/.test(event.request.url)){
                         //filter ?242432 file block save
                         const cache = await caches.open(CACHE_NAME);
                         console.log('[Service Worker] Caching new resource: ' + event.request.url);

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+    <html lang="zh-CN">
+    <head>
+        <meta charset="utf-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <meta content="target-densitydpi=device-dpi,width=device-width,user-scalable=no,maximum-scale=1,minimum-scale=1" name="viewport">
+        <meta content="Web Based Game Boy Advance, Game Boy and Game Boy Color Emulator" name="description">
+        <meta content="GBA, Game Boy Advance, Emulator, Game Boy, GB, GBC, Game Boy Color" name="keywords">
+        <meta content="yes" name="apple-mobile-web-app-capable">
+        <meta content="yes" name="mobile-web-app-capable">
+        <meta content="black" name="apple-mobile-web-app-status-bar-style">
+        <meta content="SkyEmu" name="apple-mobile-web-app-title">
+        <meta content="SkyEmu" name="application-name">
+        <meta content="#759091" name="msapplication-TileColor">
+        <meta content="#759091" name="theme-color">
+        <title>SkyEmu</title>
+        <style type="text/css">
+            body.active{
+                overflow: hidden;
+                height:100vh;
+                width: 100vw;
+                margin: 0px;
+                padding: 0px;
+            }
+            #canvas{
+                position: fixed;
+                z-index: 1;
+                left: 0px;
+                right: 0px;
+                bottom: 0px;
+                top: 0px;
+                height: 100vh;
+                width: 100vw;
+            }
+            input[type=file][id] {
+                display: block;
+                opacity: 0;
+                overflow: hidden;
+                z-index: 100;
+                margin-top: 0;
+                padding-top: 0;
+                position: absolute;
+                visibility: hidden
+            }
+            #canvas[hidden] ~ input{
+                display: none !important;
+            }
+            .rom-list{
+                margin: .5em 2em .5em .5em;
+                padding: 0px;
+                list-style: none;
+            }
+            .rom-li{
+                padding: .5em;
+                margin: .5em;
+                border: 1px solid #0fb2ff;
+            }
+            .rom-li.active{
+                background-color: green;
+                color: #fff;
+            }
+            .rom-li button{
+                display: inline-block;
+                margin-right: 2em;
+            }
+            .rom-li button.active{
+                display: block;
+                background-color: red;
+                color: #fff;
+            }
+            [hidden]{
+                display: none;
+            }
+        </style>
+    <body>
+        <div id="status"></div>
+        <canvas id="canvas" tabindex="-1" hidden></canvas>
+        <input id="fileInput" value="" type=file>
+        <input id="fileStaging" value="">
+        <input id="fileStagingName" value="">
+        <script type="text/javascript" src="assets/js/NengeDisk.js"></script>
+        <script type="text/javascript" src="assets/js/common.js" query="js=SkyEmu.js?rand"></script>
+    </body>
+    </html>

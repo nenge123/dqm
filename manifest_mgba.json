@@ -1,0 +1,13 @@
+{
+    "name": "mGba",
+    "short_name": "mGba",
+    "start_url": ".",
+    "display": "fullscreen",
+    "background_color": "black",
+    "description": "mGba",
+    "icons": [{
+      "src": "assets/gba.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }]
+  }
