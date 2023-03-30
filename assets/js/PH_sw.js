@@ -4,7 +4,7 @@ var urlsToCache = [
     '../../favicon.ico',
     '../../manifest_PH.json',
     '../dqm.png',
-    'common.min.js',
+    'common.min.js?js=PH.min',
     'PH.min.js',
 ];
 const eventFunc = {
