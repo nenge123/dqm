@@ -10,7 +10,7 @@ function getUrl(path){
 }
 (async function(){
     files = await Nenge.FetchItem({
-        url:'https://cdn.jsdelivr.net/gh/nenge123/dqm@master/assets/data/pic.zip',
+        url:T.isLocal?'assets/data/pic.zip':'https://cdn.jsdelivr.net/gh/nenge123/dqm@master/assets/data/pic.zip',
         store:T.LibStore,
         unpack:true,
         process:e=>T.$('#status').innerHTML = e,
@@ -36,7 +36,7 @@ function getUrl(path){
     T.$('#content').hidden = false;
     initSl();
 }).call(T);
-if(location.origin == 'https://dqm.nenge.net/' && 'serviceWorker' in navigator){
+if(!T.isLocal && 'serviceWorker' in navigator){
     navigator.serviceWorker.register('assets/js/PH_sw.js').then(worker=>{
     }).catch(e=>console.log('reg errot',e));
 }
