@@ -36,7 +36,7 @@ function getUrl(path){
     T.$('#content').hidden = false;
     initSl();
 }).call(T);
-if('serviceWorker' in navigator){
+if(!T.isLocal&&'serviceWorker' in navigator){
     navigator.serviceWorker.register('./PH_sw.js').then(worker=>{
     }).catch(e=>console.log('reg errot',e));
 }
