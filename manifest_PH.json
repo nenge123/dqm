@@ -1,0 +1,13 @@
+{
+    "name": "DQM",
+    "short_name": "DQM",
+    "start_url": ".",
+    "display": "fullscreen",
+    "background_color": "black",
+    "description": "DQM",
+    "icons": [{
+      "src": "assets/dqm.png",
+      "sizes": "118x118",
+      "type": "image/png"
+    }]
+  }
