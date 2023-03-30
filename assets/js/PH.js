@@ -10,7 +10,7 @@ function getUrl(path){
 }
 (async function(){
     files = await Nenge.FetchItem({
-        url:'assets/data/pic.zip',
+        url:'https://cdn.jsdelivr.net/gh/nenge123/dqm@master/assets/data/pic.zip',
         store:T.LibStore,
         unpack:true,
         process:e=>T.$('#status').innerHTML = e,
