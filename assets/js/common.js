@@ -22,7 +22,7 @@ const Nenge = new class NengeCores {
         });
         T.language = I.language;
         T.i18nName = I.i18n;
-        I.mobile && T.on(window, 'error', e => alert(e.message || e));
+        I.mobile && (window.onerror = e => alert(e.message || e));
         let src = document.currentScript && document.currentScript.src.split('?');
         T.JSpath = src && src[0].split('/').slice(0, -1).join('/') + '/';
         T.triger(document, 'NengeStart', {
@@ -289,7 +289,10 @@ const Nenge = new class NengeCores {
             }
         }
         response = await F.FetchStart(ARG).catch(e => ARG.error && ARG.error(e.message));
-        if (!response) return callback(result);
+        if (response==undefined){
+            callback(result);
+            throw 'fetch failed';
+        }
         headers = F.FetchHeader(response, ARG);
         I.exends(headers, response, ['url', 'status', 'statusText']);
         if (ARG.filename) headers.filename = ARG.filename;

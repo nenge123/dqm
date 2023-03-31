@@ -23,14 +23,18 @@
                 padding: 0px;
             }
             #canvas{
+                display: block;
                 position: fixed;
                 z-index: 1;
                 left: 0px;
                 right: 0px;
                 bottom: 0px;
                 top: 0px;
-                height: 100vh;
-                width: 100vw;
+                height:100%;
+                width: 100%;
+                touch-action: none;
+                -webkit-user-select: none;
+                user-select: none;
             }
             input[type=file][id] {
                 display: block;
@@ -42,10 +46,10 @@
                 position: absolute;
                 visibility: hidden
             }
-            #canvas[hidden] ~ input{
-                display: none !important;
-            }
             .rom-list{
+                touch-action:none;
+                -webkit-user-select: none;
+                user-select: none;
                 margin: .5em 2em .5em .5em;
                 padding: 0px;
                 list-style: none;
@@ -69,7 +73,7 @@
                 color: #fff;
             }
             [hidden]{
-                display: none;
+                display: none !important;
             }
         </style>
     <body>

@@ -9,8 +9,12 @@ function getUrl(path){
     return path;
 }
 (async function(){
+    function getpath(path){
+        return 'assets/data/'+path;
+        return T.isLocal?'assets/data/'+path:'https://raw.githubusercontent.com/nenge123/dqm/master/assets/data/'+path;
+    }
     files = await Nenge.FetchItem({
-        url:T.isLocal?'assets/data/pic.zip':'https://raw.githubusercontent.com/nenge123/dqm/master/assets/data/pic.zip',
+        url:getpath('pic.zip'),
         store:T.LibStore,
         unpack:true,
         process:e=>T.$('#status').innerHTML = e,
