@@ -1,0 +1,13 @@
+{
+    "name": "SkyEmu",
+    "short_name": "SkyEmu",
+    "start_url": ".",
+    "display": "standalone",
+    "background_color": "black",
+    "description": "SkyEmu",
+    "icons": [{
+      "src": "../assets/gba.png",
+      "sizes": "256x256",
+      "type": "image/png"
+    }]
+  }

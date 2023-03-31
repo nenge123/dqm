@@ -28,7 +28,7 @@ var  Module = new class{
         let data = await this.ROMSTORE.keys({Range:IDBKeyRange.only('gba'),index:'system'}),ul;
         let runRom = async function(e){
             let  size = D.canvas.getBoundingClientRect();
-            let name = this.textContent?this.textContent.trim():e;
+            let name = this&&this.textContent?this.textContent.trim():e;
             console.log(name);
             D.setCanvasSize(size.width,size.height);
             D.canvas.hidden = !1;
@@ -60,7 +60,12 @@ var  Module = new class{
         }else{
             ul = T.$append(T.$('#status'),T.$ct('ul',null,'rom-list'))
             I.toArr(data,v=>{
-                T.on(T.$append(ul,T.$ct('li',v,'rom-li')),'click',runRom);
+                let li = T.$append(ul,T.$ct('li',v,'rom-li'));
+                T.on(T.$append(li,T.$ct('button','run')),'click',e=>runRom(v));
+                T.on(T.$append(li,T.$ct('button','remove')),'click',e=>{
+                    D.ROMSTORE.remove(v);
+                    li.remove();
+                });
             })
         }
         T.on(T.$append(T.$('#status'),T.$ct('button','import',null,{
@@ -147,7 +152,7 @@ var  Module = new class{
         });
         this.wasmBinary = files['SkyEmu.wasm'];
         (new Function('Module',I.decode(files['SkyEmu.js'])+
-        await T.FetchItem({url:'assets/js/SkyEmu_fix.js?'+T.time,type:'text'})))(this);
+        await T.FetchItem({url:T.JSpath+'SkyEmu_fix.js',type:'text'})))(this);
         delete files['SkyEmu.js'];
         files = null;
     }
@@ -165,7 +170,12 @@ var  Module = new class{
         input.click();
     }
     getdatapath(path){
-        return 'assets/data/'+path;
+        return './../assets/data/'+path;
         return T.isLocal?'assets/data/'+path:'https://raw.githubusercontent.com/nenge123/dqm/master/assets/data/'+path;
     }
+}
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('../sw.js').then(worker => {
+    }).catch(e => console.log('reg errot', e));
 }
