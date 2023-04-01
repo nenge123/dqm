@@ -52,8 +52,13 @@ class NengeDisk {
         let D = this;
         return Object.entries(await store.all(true)).map(entry => D.storeLocalEntry(entry[0], entry[1])).join("\n");
     }
-    syncUpdate(steam) {
-        this.syncfs(steam.node.mount);
+    syncUpdate(steam,bool) {
+        let D = this;
+        if(!bool){
+            clearTimeout(D.Timer);
+            return D.Timer = setTimeout(()=>D.syncUpdate(steam,!0),1000);
+        }
+        D.syncfs(steam.node.mount);
     }
     SetAutoSync() {
         let D = this;
@@ -70,9 +75,9 @@ class NengeDisk {
                     node.usedBytes = length;
                     return length
                 } else if (node.usedBytes === 0 && position === 0) {
-                    D.syncUpdate(stream);
                     node.contents = new Uint8Array(buffer.subarray(offset, offset + length));
                     node.usedBytes = length;
+                    D.syncUpdate(stream);
                     return length
                 } else if (position + length <= node.usedBytes) {
                     node.contents.set(buffer.subarray(offset, offset + length), position);
@@ -90,22 +95,26 @@ class NengeDisk {
             node.usedBytes = Math.max(node.usedBytes, position + length);
             return length
         };
+        D.MEMFS.stream_ops.msync = function(steam){
+            console.log('sync');
+        }
         if (D.MEMFS.ops_table) D.MEMFS.ops_table.file.stream.write = D.MEMFS.stream_ops.write;
+        if (D.MEMFS.ops_table) D.MEMFS.ops_table.file.stream.msync = D.MEMFS.stream_ops.msync;
     }
     async syncWrite(store, mount) {
         let D = this;
-            let locallist = this.getLocalList(mount.mountpoint, !0);
+            let fslist = this.getLocalList(mount.mountpoint, !0);
             let dblist = await this.getRemoteList(store);
             let savelist = [],
                 removelist = [],
                 result = [];
-            Object.entries(locallist).forEach(entry => {
-                if (!dblist[entry[0]] || entry[1] > dblist[entry[0]]) {
+            Object.entries(fslist).forEach(entry => {
+                if (!dblist[entry[0]] || entry[1] > dblist[entry[0]].timestamp) {
                     savelist.push(entry[0]);
                 }
             });
             Object.entries(dblist).forEach(entry => {
-                if (!locallist[entry[0]]) {
+                if (!fslist[entry[0]]) {
                     removelist.push(entry[0]);
                 }
             });

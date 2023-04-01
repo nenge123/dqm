@@ -1,8 +1,12 @@
 function em_init_fs() {
+    return ;
     FS.mkdir("/offline");
     FS.mount(Module.DISK, {}, "/offline");
+    console.log('sync');
     FS.syncfs(true, function (err) {
-        Module.ccall("se_load_settings")
+        Module.ccall("se_load_settings");
+        Module.DISK.MKFILE('/offline/recent_games.txt',Module.loadRom+'\n');
+        Module.loadRom = Module.gameName;
     })
 }
 asmLibraryArg.Qd = em_init_fs;
@@ -11,7 +15,7 @@ Module.MEMFS = MEMFS;
 Module.callMain  = callMain;
 ASM_CONSTS[1375108] = function ($0, $1, $2, $3) {
         if(Module.loadRom){
-            ret_path = Module.loadRom;
+            var ret_path = Module.loadRom;
             Module.loadRom = "";
         }else{
 

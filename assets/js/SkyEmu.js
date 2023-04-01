@@ -17,6 +17,8 @@ var  Module = new class{
         console.log('ok',e);
         delete this.wasmBinary;
         let D = this;
+        D.FS.mkdir("/offline");
+        await D.DISK.syncfs(D.FS.mount(Module.DISK, {}, "/offline").mount);
         await T.FetchItem({
             url:D.getdatapath('bios_gba.zip'),
             store:T.LibStore,
@@ -29,14 +31,17 @@ var  Module = new class{
         let runRom = async function(e){
             let  size = D.canvas.getBoundingClientRect();
             let name = this&&this.textContent?this.textContent.trim():e;
-            console.log(name);
             D.setCanvasSize(size.width,size.height);
             D.canvas.hidden = !1;
             T.$('#status').hidden = !0;
             document.body.classList.add('active');
             D.DISK.MKFILE(name,await D.ROMSTORE.data(name));
-            D.loadRom = name;
+            D.gameName = name;
             D.callMain(D.arguments);
+            Module.DISK.MKFILE('/offline/recent_games.txt',name+'\n');
+            Module.loadRom = name;
+            Module.ccall("se_load_settings");
+            //D.loadRom = name;
         };
         if(!data.length){            
             await T.FetchItem({
