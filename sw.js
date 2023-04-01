@@ -1,7 +1,7 @@
 var CACHE_PREX = 'DQM_';
-var CACHE_NAME = CACHE_PREX+'v1';
+var CACHE_NAME = CACHE_PREX+'v2';//if you have any version update change here
 var CACHE_PATH = serviceWorker.scriptURL.split('/').slice(0,-1).join('/')+'/';
-var urlsToCache = [
+var urlsToCache = [//set some cache path or file,but it not important you can not set it ,change "fetch(event)"
     'favicon.ico',
     'assets/dqm.png',
     'assets/js/common.min.js',
@@ -19,12 +19,6 @@ var urlsToCache = [
     'SkyEmu/index.html',
     'SkyEmu/manifest.json',
 ];
-function geturl(path){
-    return path.split('#')[0].split('?')[0];
-}
-function getExt(path){
-    return geturl(path).split('.').pop();
-}
 Object.entries(
     {
         install(event){

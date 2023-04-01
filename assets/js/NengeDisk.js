@@ -1,10 +1,10 @@
 
 class NengeDisk {
-    constructor(DB) {
-        if(DB)this.DB = DB;
+    DB={};
+    mountPath = [];
+    constructor(path,NAME) {
+        if(path)this.pathToDB(NAME||'MyEmu',path);
     }
-    action = {};
-    DB = {};
     SetModule(Module) {
         Object.defineProperty(this,'Module',{get:()=>Module});
     }
@@ -18,18 +18,20 @@ class NengeDisk {
         return this.Module.HEAP8 || self.HEAP8;
     }
     getStore(mount) {
-        let path = mount.mountpoint;
-        if (!this.DB[path]) {
-            return false;
-        }
-        return this.DB[path];
+        if(!mount.mountpoint)return;
+        return this.DB[mount.mountpoint];
     }
     mount(mount) {
-        let D = this;
-        return D.MEMFS.mount.apply(null, arguments);
+        let path = mount.mountpoint;
+        if(!this.DB[path])this.mountPath.push(path);
+        return this.MEMFS.mount.apply(null, arguments);
     }
     async syncfs(mount, populate,callback) {
         let D = this;
+        if(D.mountPath.length){
+            this.pathToDB('MyEmuData',Object.fromEntries(D.mountPath.map(v=>[v,v])));
+            D.mountPath = [];
+        }
         let store = D.getStore(mount);
         let result;
         if(store){
@@ -296,65 +298,97 @@ class NengeDisk {
             });
         }
     }
-    setIdb(NAME,TABLES,version){
-        /**set a index */
-        if(typeof TABLES == 'string')TABLES = [TABLES];
-        this.idb = new Promise(callback => {
-            let request = indexedDB.open(NAME,version);
-            request.onupgradeneeded = e => {
-                let db = request.result;
-                TABLES.forEach(
-                    table=>{
-                        if (!db.objectStoreNames.contains(table)) {
-                            let dbtable = db.createObjectStore(table);
-                            dbtable.createIndex('timestamp', 'timestamp', {
-                                unique: false
-                            });
-                        }
-                    }
-                )
-            };
-            request.onsuccess = e => callback(request.result);
-            request.onerror = e => callback(null);
-        })
-    };
-    async db_select(table,mode) {
-        /**get table transaction in indexedDB */
-        let db = await this.idb;
-        mode = mode ? "readonly" : "readwrite";
-        let tdb = db.transaction([table], mode);
-        return tdb.objectStore(table);
+    StoreBase= {};
+    StoreTable = {};
+    pathToDB(NAME,path){
+        let D=this,paths = Object.entries(path),TABLES = paths.map(v=>v[1]);
+        if(D.StoreBase[NAME]){
+            D.StoreBase[NAME].then(db=>{
+                db.close();
+                D.StoreBase[NAME] = null;
+            })
+        }
+        paths.forEach(v=>this.DB[v[0]] = new D.StoreClass(NAME,v[1],TABLES,D));
+
     }
-    async db_index(table){
-        /**get data.timestamp in table data in indexedDB */
-        let entries = {},
-            index = 'timestamp';
-        let transaction = await this.db_select(table,!0);
-        return new Promise(callback => {
-            transaction.index(index).openKeyCursor().onsuccess = e => {
-                let cursor = e.target.result;
-                if (cursor) {
-                    entries[cursor.primaryKey] = cursor.key;
-                    cursor.continue();
-                } else {
-                    callback(entries);
-                }
-            }
-        })
-    }
-    async db_all(table){
-        /**get all in table data in indexedDB */
-        let transaction = await this.db_select(table,!0),entries={};
-        return new Promise(callback => {
-            transaction.openCursor().onsuccess = e => {
-                let cursor = e.target.result;
-                if (cursor) {
-                    entries[cursor.primaryKey] = cursor.value;
-                    cursor.continue();
-                } else {
-                    callback(entries);
-                }
-            }
+    getDB(NAME,TABLES){
+        if(typeof TABLES == 'string') TABLES = [TABLES];
+        let D=this;
+        if( D.StoreTable[TABLES[0]]) return D.StoreTable[TABLES[0]];
+        TABLES.forEach(table=>{
+            D.StoreTable[table] = new D.StoreClass(NAME,table,TABLES,D);
         });
+        return D.StoreTable[TABLES[0]];
+    }
+    StoreClass = class{
+        constructor(NAME,table,TABLES,D){
+            this.NAME = NAME;
+            this.table = table;
+            this.TABLES = TABLES;
+            Object.defineProperty(this,'D',{
+                get:()=>D
+            });
+        }
+        idb(version){
+            let S = this,
+                NAME = S.NAME,
+                TABLES = S.TABLES,
+                D = S.D;
+            if(!version&&D.StoreBase[NAME]&&(D.StoreBase[NAME] instanceof Promise)) return D.StoreBase[NAME];
+            return D.StoreBase[NAME] =  new Promise(callback => {
+                const request = indexedDB.open(NAME,version);
+                request.onupgradeneeded = e => {
+                    let db = request.result;
+                    TABLES.forEach(
+                        table=>{
+                            if (!db.objectStoreNames.contains(table)) {
+                                let dbtable = db.createObjectStore(table);
+                                dbtable.createIndex('timestamp', 'timestamp', {
+                                    unique: false
+                                });
+                            }
+                        }
+                    )
+                };
+                request.onsuccess = e => {
+                    let db = request.result;
+                    if(TABLES.filter(v=>db.objectStoreNames.contains(v)).length == TABLES.length){
+                        return callback(db)
+                    }else{
+                        db.close();
+                        S.idb(db.version+1).then(v=>callback(v))
+                    }
+                };
+                request.onerror = e => callback(null);
+            });
+        }
+        async transaction(mode) {
+            mode = mode ? "readonly" : "readwrite";
+            let table = this.table,
+                db = await this.idb(),
+                tdb = db.transaction([table], mode);
+            return tdb.objectStore(table);
+        }
+        async getlist(bool){
+            /**get all in table data in indexedDB */
+            let transaction = await this.transaction(!0),entries={};
+            return new Promise(callback => {
+                (bool?transaction.openCursor():transaction.index('timestamp').openKeyCursor()).onsuccess = e => {
+                    let cursor = e.target.result;
+                    if (cursor) {
+                        entries[cursor.primaryKey] = cursor.value;
+                        cursor.continue();
+                    } else {
+                        callback(entries);
+                    }
+                }
+            });
+        }
+        async all(){
+            return this.getlist(!0);
+        }
+        async cursor(){
+            return this.getlist();
+        }
     }
 }

@@ -133,7 +133,11 @@ var  Module = new class{
         this.init();
         this.ROMSTORE = T.getStore('rom','DQM');
         this.Store = T.getStore('offline','SkyEmu',{'timestamp':false});
-        this.DISK = new NengeDisk({'/offline':this.Store});
+        this.DISK = new NengeDisk({
+            '/offline':'offline'
+        },
+        'SkyEmu2');
+        this.DISK.DB['/offline'] = this.Store;
         this.DISK.SetModule(this);
         this.DISK.Filter = path=>/recent_games\.txt/.test(path);
     }
