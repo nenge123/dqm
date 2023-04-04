@@ -1755,9 +1755,7 @@ const Nenge = new class NengeCores {
                     let cursor = evt.target.result;
                     if (cursor) {
                         if (!ARG.only || T.part && !cursor.primaryKey.includes(T.part)) {
-                            entries[cursor.primaryKey] = I.FromEntries([
-                                [index, cursor.key]
-                            ]);
+                            entries[cursor.primaryKey] = cursor.key
                         }
                         cursor.continue()
                     } else {

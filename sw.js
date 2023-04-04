@@ -7,9 +7,9 @@ var urlsToCache = [//set some cache path or file,but it not important you can no
     'assets/js/common.min.js',
     'assets/js/PH.js',
     'assets/gba.png',
-    'assets/js/SkyEmu.js',
+    'assets/js/SkyEmu.min.js',
     'assets/js/SkyEmu_fix.js',
-    'assets/js/NengeDisk.js',
+    'assets/js/NengeDisk.min.js',
 
     'ph/',
     'ph/index.html',
@@ -77,6 +77,7 @@ Object.entries(
         },
         message(event){
             console.log(event.data);
+            //event.source.postMessage('I know');
         }
     }
 ).forEach(

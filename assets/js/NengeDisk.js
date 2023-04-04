@@ -38,7 +38,6 @@ class NengeDisk {
             if (!mount.isReady) {
                 //初始化
                 result = await this.loadFile(store).catch(e=>alert(e));
-                this.SetAutoSync(); //自动同步
                 mount.isReady = true;
             } else {
                 result = await D.syncWrite(store, mount);
@@ -60,9 +59,11 @@ class NengeDisk {
         }
         D.syncfs(steam.node.mount);
     }
-    SetAutoSync() {
+    setMEMFS(MEMFS){
         let D = this;
-        D.MEMFS.stream_ops.write = function (stream, buffer, offset, length, position, canOwn) {
+        if(!this.Module.MEMFS)Object.defineProperty(this.Module.MEMFS,{get:()=>MEMFS});
+        else if(!MEMFS)MEMFS = D.MEMFS;
+        MEMFS.stream_ops.write = function (stream, buffer, offset, length, position, canOwn) {
             if (D.HEAP8 && buffer.buffer === D.HEAP8.buffer) {
                 canOwn = false
             }
@@ -95,11 +96,11 @@ class NengeDisk {
             node.usedBytes = Math.max(node.usedBytes, position + length);
             return length
         };
-        D.MEMFS.stream_ops.msync = function(steam){
+        MEMFS.stream_ops.msync = function(steam){
             console.log('sync');
         }
-        if (D.MEMFS.ops_table) D.MEMFS.ops_table.file.stream.write = D.MEMFS.stream_ops.write;
-        if (D.MEMFS.ops_table) D.MEMFS.ops_table.file.stream.msync = D.MEMFS.stream_ops.msync;
+        if (MEMFS.ops_table) MEMFS.ops_table.file.stream.write = MEMFS.stream_ops.write;
+        if (MEMFS.ops_table) MEMFS.ops_table.file.stream.msync = MEMFS.stream_ops.msync;
     }
     async syncWrite(store, mount) {
         let D = this;
@@ -109,7 +110,7 @@ class NengeDisk {
                 removelist = [],
                 result = [];
             Object.entries(fslist).forEach(entry => {
-                if (!dblist[entry[0]] || entry[1] > dblist[entry[0]].timestamp) {
+                if (!dblist[entry[0]] || entry[1] > dblist[entry[0]]) {
                     savelist.push(entry[0]);
                 }
             });
@@ -118,13 +119,13 @@ class NengeDisk {
                     removelist.push(entry[0]);
                 }
             });
-            let transaction = await store.transaction();
+            let db = await store.transaction();
             savelist.sort().forEach(path => {
-                transaction.put(this.loadLocalEntry(path), path);
+                db.put(this.loadLocalEntry(path), path);
                 result.push('indexdb write:'+path);
             });
             removelist.sort().forEach(path => {
-                transaction.delete(path);
+                db.delete(path);
                 result.push('indexdb delete:'+path);
             });
             this.log&&this.log(IsReady, result);
@@ -380,12 +381,12 @@ class NengeDisk {
         }
         async getlist(bool){
             /**get all in table data in indexedDB */
-            let transaction = await this.transaction(!0),entries={};
+            let db = await this.transaction(!0),entries={};
             return new Promise(callback => {
-                (bool?transaction.openCursor():transaction.index('timestamp').openKeyCursor()).onsuccess = e => {
+                (bool?db.openCursor():db.index('timestamp').openKeyCursor()).onsuccess = e => {
                     let cursor = e.target.result;
                     if (cursor) {
-                        entries[cursor.primaryKey] = cursor.value;
+                        entries[cursor.primaryKey] = cursor[bool?'value':'key'];
                         cursor.continue();
                     } else {
                         callback(entries);
@@ -398,6 +399,37 @@ class NengeDisk {
         }
         async cursor(){
             return this.getlist();
+        }
+        async findItem(name,key){
+            let db = await this.transaction(!0);
+            return new Promise(back=>{
+                if(typeof name == 'string') db.get(name).onsuccess = e=>{
+                    let result = e.target.result;
+                    back(key?result[key]:result);
+                };
+                else Promise.all(name.map(
+                    v=>new Promise(c=>db.get(v).onsuccess = e=>{
+                        let result = e.target.result;
+                        c([v,key?result[key]:result])
+                    })
+                )).then(result=>back(Object.fromEntries(result.filter(v=>v[1]))));
+            });
+        }
+        async removeItem(name){
+            let db = await this.transaction();
+            return new Promise(back=>{
+                if(typeof name == 'string') db.delete(name).onsuccess = e=>back(e.target.result);
+                else Promise.all(name.map(v=>new Promise(c=>db.delete(v).onsuccess = e=>c(e.target.result)))).then(result=>back(Object.fromEntries(result)));
+            });
+        }
+        async saveItem(data,name){
+            let db = await this.transaction();
+            if(!name)Object.entries(data).map(v=>new Promise(c=>db.put(v[1],v[0]).onsuccess = e=>c(e.target.result)));
+            else new Promise(c=>db.put(data,name).onsuccess = e=>c(e.target.result));
+        }
+        async keys(){
+            let db = await this.transaction(!0);
+            return new Promise(c=>db.getAllKeys().onsuccess = e => c(e.target.result))
         }
     }
 }
