@@ -60,15 +60,19 @@ var Module = new class{
         }else{
             ul = T.$append(T.$('#status'),T.$ct('ul',null,'rom-list'))
             I.toArr(data,v=>{
-                let li = T.$append(ul,T.$ct('li',v,'rom-li'));
-                T.on(T.$append(li,T.$ct('button','run')),'click',e=>runRom(v));
-                T.on(T.$append(li,T.$ct('button','remove')),'click',e=>{
+                let li = T.$append(ul,T.$ct('li',v,'rom-li')),p = T.$append(li,T.$ct('p',null,'rom-p'));
+                T.on(T.$append(p,T.$ct('button','run','rom-btn')),'click',e=>runRom(v));
+                T.on(T.$append(p,T.$ct('button','down','rom-btn')),'click',e=>{
+                    M.ROMSTORE.data(v).then(k=>T.down(v,k));
+                    T.stopEvent(e);
+                });
+                T.on(T.$append(p,T.$ct('button','remove','rom-btn')),'click',e=>{
                     M.ROMSTORE.remove(v);
                     li.remove();
                 });
             })
         }
-        T.on(T.$append(T.$('#status'),T.$ct('button','import',null,{
+        T.on(T.$append(T.$('#status'),T.$ct('button','import','rom-btn',{
             style:'margin:2em'
         })),'click',e=>{
             M.upload(files=>{
@@ -82,7 +86,7 @@ var Module = new class{
                     T.on(T.$append(ul,T.$ct('li',file.name,'rom-li')),'click',runRom);
                 }else{
                     I.toArr(u8,entry=>{
-                        if(/(gb|gbc|gba)/i.test(entry[0])&&entry[1].length>1024){
+                        if(/\.(gb|gbc|gba|nds)$/i.test(entry[0])&&entry[1].length>1024){
                             M.ROMSTORE.put(entry[0],{
                                 contents:entry[1],
                                 system:'gba'
@@ -97,11 +101,11 @@ var Module = new class{
         let sul = T.$append(T.$('#status'),T.$ct('ul',null,'rom-list')),
             Store = M.DISK.DB['/offline'];
         I.toArr(await Store.keys(),v=>{
-            let li = T.$append(sul,T.$ct('li',v,'rom-li'));
-            T.on(T.$append(li,T.$ct('button','down','rom-li')),'click',async e=>{
+            let li = T.$append(sul,T.$ct('li',v,'rom-li')),p = T.$append(li,T.$ct('p',null,'rom-p'));
+            T.on(T.$append(p,T.$ct('button','down','rom-btn')),'click',async e=>{
                 T.down(v,await Store.findItem(v,'contents'));
             });
-            T.on(T.$append(li,T.$ct('button','replace','rom-li')),'click',async function (e){
+            T.on(T.$append(p,T.$ct('button','replace','rom-btn')),'click',async function (e){
                 M.upload(async files=>{
                     let u8 =await T.unFile(files[0]);
                     let data = await  Store.findItem(v);
@@ -124,7 +128,7 @@ var Module = new class{
                     li.classList.add('active');
                 },!0)
             });
-            T.on(T.$append(li,T.$ct('button','delete','rom-li')),'click',async e=>{
+            T.on(T.$append(p,T.$ct('button','del','rom-btn')),'click',async e=>{
                 await Store.removeItem(v);
                 li.remove();
             });
@@ -181,6 +185,5 @@ var Module = new class{
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('../sw.js').then(worker => {
-        worker.active.postMessage('register ok');
     }).catch(e => console.log('reg errot', e));
 }

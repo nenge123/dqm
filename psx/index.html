@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xml:lang="zh-Hans" lang="zh-Hans">
+<head>
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+  <title>psx在线模拟器</title>
+  <link rel="stylesheet" href="../assets/css/dp.css">
+  <style type="text/css">
+    body{
+      background-color: #000;
+      color: #fff;
+      padding: 0px;
+      margin: 0px;
+      --height:100vh;
+      --width:100vw;
+    }
+    #canvas{
+        max-width: 100% !important;
+        max-height: 100% !important;
+        width: 100% !important;
+        user-select: none;
+        touch-action: none;
+        margin: auto
+    }
+    #canvas[hidden] ~ .emu-controls{
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+    <div id="status"></div>
+    <canvas id="canvas" class="gba-pic" width="960" height="720" hidden></canvas>
+    <div class="emu-controls">
+      <div class="emu-dpad">
+          <button class="emu-dp-btn" data-key="left,up"></button>
+          <button class="emu-dp-btn" data-key="up"></button>
+          <button class="emu-dp-btn" data-key="left,down"></button>
+          <button class="emu-dp-btn" data-key="down"></button>
+          <button class="emu-dp-btn" data-key="left"></button>
+          <button class="emu-dp-btn"></button>
+          <button class="emu-dp-btn" data-key="right,up"></button>
+          <button class="emu-dp-btn" data-key="right,down"></button>
+          <button class="emu-dp-btn" data-key="right"></button>
+      </div>
+      <div class="emu-xyab">
+          <button class="emu-ab-btn" data-key="x">X</button>
+          <button class="emu-ab-btn" data-key="y">Y</button>
+          <button class="emu-ab-btn" data-key="a">A</button>
+          <button class="emu-ab-btn" data-key="b">B</button>
+      </div>
+      <div class="emu-lbrt">
+          <button class="emu-lr-btn" data-key="l">L</button>
+          <button class="emu-lr-btn" data-key="r">R</button>
+      </div>
+      <div class="emu-bottom">
+          <button class="emu-ss-btn" data-key="select">SELECT</button>
+          <button class="emu-ss-btn" data-key="start">START</button>
+      </div>
+  </div>
+    <script type="text/javascript" src="../assets/js/NengeDisk.js" query="js=psx.js?rand"></script>
+    <script type="text/javascript" src="../assets/js/common.js" query="js=psx.js?rand"></script>
+</body>
+</html>

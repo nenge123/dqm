@@ -1,5 +1,5 @@
 var CACHE_PREX = 'DQM_';
-var CACHE_NAME = CACHE_PREX+'v4';//if you have any version update change here
+var CACHE_NAME = CACHE_PREX+'v7';//if you have any version update change here
 var CACHE_PATH = serviceWorker.scriptURL.split('/').slice(0,-1).join('/')+'/';
 var urlsToCache = [//set some cache path or file,but it not important you can not set it ,change "fetch(event)"
     'favicon.ico',

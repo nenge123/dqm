@@ -61,7 +61,7 @@ class NengeDisk {
     }
     setMEMFS(MEMFS){
         let D = this;
-        if(!this.Module.MEMFS)Object.defineProperty(this.Module.MEMFS,{get:()=>MEMFS});
+        if(!this.Module.MEMFS)Object.defineProperty(this.Module,'MEMFS',{get:()=>MEMFS});
         else if(!MEMFS)MEMFS = D.MEMFS;
         MEMFS.stream_ops.write = function (stream, buffer, offset, length, position, canOwn) {
             if (D.HEAP8 && buffer.buffer === D.HEAP8.buffer) {
